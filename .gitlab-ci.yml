@@ -1,18 +1,50 @@
 stages:
+  - build
   - deploy
+  - verify
 
+# ── Build: buat Docker image di dalam Minikube ──────────────────────────────
+build_image:
+  stage: build
+  tags:
+    - runner-drpl
+  script:
+    - export PATH=$PATH:/opt/homebrew/bin
+    - echo "[1/3] Membangun Docker image di Minikube..."
+    - minikube image build -t web-portofolio:latest .
+    - echo "✓ Image web-portofolio:latest berhasil dibuat."
+
+# ── Deploy: terapkan ke Kubernetes via Minikube ──────────────────────────────
 deploy_ke_minikube:
   stage: deploy
   tags:
     - runner-drpl
   script:
     - export PATH=$PATH:/opt/homebrew/bin
-    - echo "Membangun image aplikasi di Minikube..."
-    - minikube image build -t web-portofolio:latest .
-    - echo "Membuat atau memperbarui Deployment di Kubernetes..."
-    - kubectl get deployment deploy-portofolio || kubectl create deployment deploy-portofolio --image=web-portofolio:latest
-    - kubectl set image deployment/deploy-portofolio web-portofolio=web-portofolio:latest || true
-    - kubectl rollout restart deployment deploy-portofolio
-    - echo "Membuka port akses aplikasi..."
-    - kubectl get service deploy-portofolio || kubectl expose deployment deploy-portofolio --type=NodePort --port=80
-    - echo "Deploy Otomatis Berhasil!"
+    - echo "[2/3] Menerapkan Deployment ke Kubernetes..."
+    - |
+      if kubectl get deployment deploy-portofolio > /dev/null 2>&1; then
+        kubectl set image deployment/deploy-portofolio web-portofolio=web-portofolio:latest
+        kubectl rollout restart deployment deploy-portofolio
+        echo "✓ Deployment diperbarui dan di-restart."
+      else
+        kubectl create deployment deploy-portofolio --image=web-portofolio:latest
+        echo "✓ Deployment baru berhasil dibuat."
+      fi
+    - kubectl get service deploy-portofolio > /dev/null 2>&1 || kubectl expose deployment deploy-portofolio --type=NodePort --port=80
+    - echo "✓ Service tersedia."
+
+# ── Verify: cek pod dan URL akses ────────────────────────────────────────────
+verify_deployment:
+  stage: verify
+  tags:
+    - runner-drpl
+  script:
+    - export PATH=$PATH:/opt/homebrew/bin
+    - echo "[3/3] Memverifikasi status deployment..."
+    - kubectl rollout status deployment/deploy-portofolio --timeout=60s
+    - echo "── Status Pod ──"
+    - kubectl get pods -l app=deploy-portofolio
+    - echo "── URL Akses (gunakan dengan ngrok untuk expose publik) ──"
+    - minikube service deploy-portofolio --url
+    - echo "✓ Deploy Otomatis Berhasil! Pipeline selesai."
