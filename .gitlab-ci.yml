@@ -22,16 +22,10 @@ deploy_ke_minikube:
   script:
     - export PATH=$PATH:/opt/homebrew/bin
     - echo "[2/3] Menerapkan Deployment ke Kubernetes..."
-    - |
-      if kubectl get deployment deploy-portofolio > /dev/null 2>&1; then
-        kubectl set image deployment/deploy-portofolio web-portofolio=web-portofolio:latest
-        kubectl rollout restart deployment deploy-portofolio
-        echo "✓ Deployment diperbarui dan di-restart."
-      else
-        kubectl create deployment deploy-portofolio --image=web-portofolio:latest
-        echo "✓ Deployment baru berhasil dibuat."
-      fi
-    - kubectl get service deploy-portofolio > /dev/null 2>&1 || kubectl expose deployment deploy-portofolio --type=NodePort --port=80
+    - kubectl get deployment deploy-portofolio || kubectl create deployment deploy-portofolio --image=web-portofolio:latest
+    - kubectl set image deployment/deploy-portofolio web-portofolio=web-portofolio:latest || true
+    - kubectl rollout restart deployment deploy-portofolio
+    - kubectl get service deploy-portofolio || kubectl expose deployment deploy-portofolio --type=NodePort --port=80
     - echo "✓ Service tersedia."
 
 # ── Verify: cek pod dan URL akses ────────────────────────────────────────────
