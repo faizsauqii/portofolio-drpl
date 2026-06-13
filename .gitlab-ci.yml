@@ -39,6 +39,6 @@ verify_deployment:
     - kubectl rollout status deployment/deploy-portofolio --timeout=60s
     - echo "── Status Pod ──"
     - kubectl get pods -l app=deploy-portofolio
-    - echo "── URL Akses (gunakan dengan ngrok untuk expose publik) ──"
-    - minikube service deploy-portofolio --url
+    - echo "── Status Service ──"
+    - kubectl get service deploy-portofolio
     - echo "✓ Deploy Otomatis Berhasil! Pipeline selesai."
