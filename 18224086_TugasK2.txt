@@ -2,6 +2,7 @@ Nama  : Faiz Muhammad Sauqi
 NIM   : 18224086
 Tugas : K2 - Portfolio Website & CI/CD Pipeline
 
-Link YouTube  : https://youtu.be/[ISI_SETELAH_UPLOAD]
+Link YouTube  : https://youtu.be/KA6lHt5mjJ4
 Link GitLab   : https://gitlab.itb.ac.id/18224086/portofolio-drpl
-Link Website  : [ISI_URL_NGROK_ATAU_MINIKUBE_SERVICE]
+Link GitHub   : https://github.com/faizsauqii/portofolio-drpl
+Link Website  : https://portofolio.golazo.dev
