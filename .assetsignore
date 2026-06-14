@@ -1,0 +1,10 @@
+.git
+.gitignore
+.gitlab-ci.yml
+Dockerfile
+wrangler.toml
+.assetsignore
+env
+*.txt
+*.md
+.DS_Store
